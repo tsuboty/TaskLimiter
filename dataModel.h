@@ -8,6 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+
 @interface dataModel : NSObject
+
+@property (retain) NSMutableArray *tasks;
+
+
+
 
 @end

@@ -11,5 +11,7 @@
 
 @implementation dataModel
 
+@synthesize tasks;
+
 
 @end
