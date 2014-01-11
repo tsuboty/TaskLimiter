@@ -7,8 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "dataModel.h"
+#import "Task.h"
+#import "testModel.h"
+
+testModel *tm;
+NSMutableArray *tasks;
 
 @interface FirstViewController : UIViewController
+
+- (BOOL)saveTasks:(NSMutableArray *)tasks;
 
 @end

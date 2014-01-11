@@ -8,6 +8,7 @@
 
 #import "FirstViewController.h"
 
+
 @interface FirstViewController ()
 @property (weak, nonatomic) IBOutlet UILabel *strHour;
 @property (weak, nonatomic) IBOutlet UILabel *strMin;
@@ -18,42 +19,36 @@
 
 - (IBAction)inputTask:(id)sender;
 - (IBAction)dataPicker:(UIDatePicker *)sender;
+- (IBAction)inputButton:(id)sender;
 
 
 @end
 
 @implementation FirstViewController
 
+
+
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-   
-    
-//    [self.dataPicker init];
-    self.dataPicker.datePickerMode = UIDatePickerModeCountDownTimer;
-    
-/*    NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSDateComponents *comps = [[NSDateComponents alloc] init];
-    [comps setYear:2010];
-    [comps setMonth:1];
-    [comps setDay:2];
-    [comps setHour:0];
-    [comps setMinute:0];
-    [comps setSecond:5];
-    NSDate *date = [calendar dateFromComponents:comps];
-    
-    
-    self.dataPicker.date = date;
-*/    
 
+    self.dataPicker.datePickerMode = UIDatePickerModeCountDownTimer;
+
+//    self.dataPicker.opaque = NO;
+//    self.dataPicker.backgroundColor = [UIColor colorWithRed:0 green:0.5 blue:1.0 alpha:0.1f];
+    
     self.inputTask.delegate = self;
+    tasks = [NSMutableArray array];
     
-    [self dataPicker:_dataPicker];
     
-//    dataModel d = [[dataModel alloc]init];
+    //CoreData初期設定
     
-//    d.tasks[0] = 1;
+    // NSManagedObjectModel
+
+    
+    
     
 }
 
@@ -68,31 +63,90 @@
     // Dispose of any resources that can be recreated.
 }
 
+//textfieldでDone時
 - (IBAction)inputTask:(id)sender {
-    
+
     
 }
 
-- (IBAction)dataPicker:(UIDatePicker *)sender {
+
+
 //Picker 変更時に呼び出される。
+- (IBAction)dataPicker:(UIDatePicker *)sender {
     
-    //Picker の値
+    //Pickeで取得したdate
     NSDate *date = self.dataPicker.date;
+//    NSTimeInterval  since = [self.dataPicker.date timeIntervalSinceNow];
     NSDateFormatter *df = [[NSDateFormatter alloc]init];
     df.dateFormat = @"H";
     self.strHour.text = [df stringFromDate:date];
     df.dateFormat = @"m";
     self.strMin.text = [df stringFromDate:date];
 
-    NSLog(@"%@",[df stringFromDate:date]);
+    
+}
+
+
+//inputボタンを押したとき
+- (IBAction)inputButton:(id)sender {
+    //1つのタスクに１つのインスタンスを作成する。
+    tm = [[testModel alloc]init];
+    
+    //モデルに情報を入力
+    tm.name = self.inputTask.text;
+    tm.date = self.dataPicker.date;
+    
+    //tasks配列に格納
+    [tasks addObject:tm];
+    
+/*　　 for(int i=0;i<tasks.count;i++){
+        testModel *t;
+        t = [tasks objectAtIndex:i];
+        NSLog(@"配列%dは%@",i,t.name);
+    }
+*/
+    [self saveTasks:tasks];
+    
+
+    
+    //タスクフィール ドを空にする。
+    self.inputTask.text = @"";
+    NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
+	[inputDateFormatter setDateFormat:@"HH:mm"];
+	NSString *intputDateStr = @"00:00";
+	NSDate *inputDate = [inputDateFormatter dateFromString:intputDateStr];
     
     
-    //引数にPickerでとった誕生日を入れる。戻り値は現在との差分を計算したNSDateComponets
- //   NSDateComponents *comp = [self calcCalendar:birthdayComp];
+    self.dataPicker.date = inputDate;
+    self.strHour.text = @"0";
+    self.strMin.text = @"0";
     
-    //outletに表示
- //   self.born.text = [NSString stringWithFormat:@"%d",comp.day];
+    
+    
+    NSUserDefaults *myDefaults = [NSUserDefaults standardUserDefaults];
+    
+    //キーと値をセットにする。
+    [myDefaults setInteger:tm.name forKey:@"name"];
+    [myDefaults setInteger:tm.date forKey:@"date"];
+    
+    //同期処理
+    [myDefaults synchronize];
+    
     
     
 }
+
+//tasksをNSData型にしてuserdefaultで保存メソッド
+- (BOOL)saveTasks:(NSMutableArray *)tasks{
+    //UserDefaultsを利用してデータを記録する。
+
+    
+
+    
+    
+    return TRUE;
+}
+
+
+
 @end
