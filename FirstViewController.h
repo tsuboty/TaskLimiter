@@ -7,13 +7,21 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Task.h"
-#import "testModel.h"
+#import <CoreData/CoreData.h>
+#import "DataManager.h"
 
-testModel *tm;
-NSMutableArray *tasks;
+
+
+//testModel *tm;
+//NSMutableArray *tasks;
+
+
 
 @interface FirstViewController : UIViewController
+
+@property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
+@property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (strong, nonatomic) NSEntityDescription *entity;
 
 - (BOOL)saveTasks:(NSMutableArray *)tasks;
 

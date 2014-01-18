@@ -17,6 +17,7 @@
 
 
 
+
 - (IBAction)inputTask:(id)sender;
 - (IBAction)dataPicker:(UIDatePicker *)sender;
 - (IBAction)inputButton:(id)sender;
@@ -26,7 +27,7 @@
 
 @implementation FirstViewController
 
-
+@synthesize entity;
 
 
 - (void)viewDidLoad
@@ -34,23 +35,40 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
 
+    
+
+    DataManager *dm = [DataManager sharedData];
     self.dataPicker.datePickerMode = UIDatePickerModeCountDownTimer;
+    self.managedObjectContext = dm.managedObjectContext;
+    _dataPicker.minuteInterval = 5;
 
-//    self.dataPicker.opaque = NO;
-//    self.dataPicker.backgroundColor = [UIColor colorWithRed:0 green:0.5 blue:1.0 alpha:0.1f];
-    
-    self.inputTask.delegate = self;
-    tasks = [NSMutableArray array];
-    
-    
-    //CoreData初期設定
-    
-    // NSManagedObjectModel
-
-    
-    
     
 }
+
+- (void)insertNewObject:(id)sender
+{
+    NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
+    
+    NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:_managedObjectContext];
+    
+    // If appropriate, configure the new managed object.
+    // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
+    [newManagedObject setValue:self.inputTask.text forKey:@"name"];
+    [newManagedObject setValue:self.dataPicker.date forKey:@"date"];
+    
+    
+    // Save the context.
+    NSError *error = nil;
+    if (![_managedObjectContext save:&error]) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+}
+
+
+
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     [self.inputTask resignFirstResponder];
@@ -90,23 +108,7 @@
 //inputボタンを押したとき
 - (IBAction)inputButton:(id)sender {
     //1つのタスクに１つのインスタンスを作成する。
-    tm = [[testModel alloc]init];
-    
-    //モデルに情報を入力
-    tm.name = self.inputTask.text;
-    tm.date = self.dataPicker.date;
-    
-    //tasks配列に格納
-    [tasks addObject:tm];
-    
-/*　　 for(int i=0;i<tasks.count;i++){
-        testModel *t;
-        t = [tasks objectAtIndex:i];
-        NSLog(@"配列%dは%@",i,t.name);
-    }
-*/
-    [self saveTasks:tasks];
-    
+    [self insertNewObject:nil];
 
     
     //タスクフィール ドを空にする。
@@ -121,32 +123,48 @@
     self.strHour.text = @"0";
     self.strMin.text = @"0";
     
-    
-    
-    NSUserDefaults *myDefaults = [NSUserDefaults standardUserDefaults];
-    
-    //キーと値をセットにする。
-    [myDefaults setInteger:tm.name forKey:@"name"];
-    [myDefaults setInteger:tm.date forKey:@"date"];
-    
-    //同期処理
-    [myDefaults synchronize];
-    
-    
-    
 }
 
 //tasksをNSData型にしてuserdefaultで保存メソッド
 - (BOOL)saveTasks:(NSMutableArray *)tasks{
     //UserDefaultsを利用してデータを記録する。
-
-    
-
-    
-    
     return TRUE;
 }
 
-
+- (NSFetchedResultsController *)fetchedResultsController
+{
+    if (_fetchedResultsController != nil) {
+        return _fetchedResultsController;
+    }
+    
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    // Edit the entity name as appropriate.
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"Task" inManagedObjectContext:self.managedObjectContext];
+    [fetchRequest setEntity:entity];
+    
+    // Set the batch size to a suitable number.
+    [fetchRequest setFetchBatchSize:20];
+    
+    // Edit the sort key as appropriate.
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date" ascending:NO];
+    NSArray *sortDescriptors = @[sortDescriptor];
+    [fetchRequest setSortDescriptors:sortDescriptors];
+    
+    // Edit the section name key path and cache name if appropriate.
+    // nil for section name key path means "no sections".
+    NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath:nil cacheName:nil];
+    aFetchedResultsController.delegate = self;
+    self.fetchedResultsController = aFetchedResultsController;
+    
+	NSError *error = nil;
+	if (![self.fetchedResultsController performFetch:&error]) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+	    NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+	    abort();
+	}
+    
+    return _fetchedResultsController;
+}
 
 @end
