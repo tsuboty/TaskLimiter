@@ -34,38 +34,14 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-
-    
-
     DataManager *dm = [DataManager sharedData];
     self.dataPicker.datePickerMode = UIDatePickerModeCountDownTimer;
     self.managedObjectContext = dm.managedObjectContext;
     _dataPicker.minuteInterval = 5;
 
-    
 }
 
-- (void)insertNewObject:(id)sender
-{
-    NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
-    
-    NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:_managedObjectContext];
-    
-    // If appropriate, configure the new managed object.
-    // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
-    [newManagedObject setValue:self.inputTask.text forKey:@"name"];
-    [newManagedObject setValue:self.dataPicker.date forKey:@"date"];
-    
-    
-    // Save the context.
-    NSError *error = nil;
-    if (![_managedObjectContext save:&error]) {
-        // Replace this implementation with code to handle the error appropriately.
-        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-        abort();
-    }
-}
+
 
 
 
@@ -94,14 +70,11 @@
     
     //Pickeで取得したdate
     NSDate *date = self.dataPicker.date;
-//    NSTimeInterval  since = [self.dataPicker.date timeIntervalSinceNow];
     NSDateFormatter *df = [[NSDateFormatter alloc]init];
     df.dateFormat = @"H";
     self.strHour.text = [df stringFromDate:date];
     df.dateFormat = @"m";
     self.strMin.text = [df stringFromDate:date];
-
-    
 }
 
 
@@ -110,7 +83,6 @@
     //1つのタスクに１つのインスタンスを作成する。
     [self insertNewObject:nil];
 
-    
     //タスクフィール ドを空にする。
     self.inputTask.text = @"";
     NSDateFormatter *inputDateFormatter = [[NSDateFormatter alloc] init];
@@ -118,10 +90,11 @@
 	NSString *intputDateStr = @"00:00";
 	NSDate *inputDate = [inputDateFormatter dateFromString:intputDateStr];
     
-    
     self.dataPicker.date = inputDate;
     self.strHour.text = @"0";
     self.strMin.text = @"0";
+    
+    
     
 }
 
@@ -153,7 +126,7 @@
     // Edit the section name key path and cache name if appropriate.
     // nil for section name key path means "no sections".
     NSFetchedResultsController *aFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath:nil cacheName:nil];
-    aFetchedResultsController.delegate = self;
+ //   aFetchedResultsController.delegate = self;
     self.fetchedResultsController = aFetchedResultsController;
     
 	NSError *error = nil;
@@ -167,4 +140,25 @@
     return _fetchedResultsController;
 }
 
+- (void)insertNewObject:(id)sender
+{
+    NSEntityDescription *entity = [[self.fetchedResultsController fetchRequest] entity];
+    
+    NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:[entity name] inManagedObjectContext:_managedObjectContext];
+    
+    // If appropriate, configure the new managed object.
+    // Normally you should use accessor methods, but using KVC here avoids the need to add a custom class to the template.
+    [newManagedObject setValue:self.inputTask.text forKey:@"name"];
+    [newManagedObject setValue:self.dataPicker.date forKey:@"date"];
+    
+    
+    // Save the context.
+    NSError *error = nil;
+    if (![_managedObjectContext save:&error]) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+}
 @end
