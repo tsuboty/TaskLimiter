@@ -23,6 +23,10 @@
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (strong, nonatomic) NSEntityDescription *entity;
 
-- (BOOL)saveTasks:(NSMutableArray *)tasks;
+
+
+
+- (IBAction)setEstimatedTimePicker:(id)sender forEvent:(UIEvent *)event;
+
 
 @end

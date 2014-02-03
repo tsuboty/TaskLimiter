@@ -12,7 +12,6 @@
 @interface FetchManager : NSObject
 
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
-
 @property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 
 @end

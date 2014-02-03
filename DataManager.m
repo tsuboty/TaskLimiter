@@ -111,7 +111,7 @@ static DataManager* sharedInstance = nil;
 + (id)sharedCenter {
 	@synchronized(self) {
 		if(!sharedInstance) {
-			[[self alloc] init];	// ここでは代入しないように変更
+			return [[self alloc] init];	// ここでは代入しないように変更
 		}
 	}
 	return sharedInstance;
