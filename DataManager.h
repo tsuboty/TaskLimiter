@@ -23,5 +23,6 @@
 //- (void)saveContext;
 - (NSURL *)applicationDocumentsDirectory;
 + (id)sharedData;
+- (NSArray *)recordsWithEntityName:(NSString *)entityName;
 
 @end

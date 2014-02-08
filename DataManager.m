@@ -117,6 +117,22 @@ static DataManager* sharedInstance = nil;
 	return sharedInstance;
 }
 
+-(NSArray *)recordsWithEntityName:(NSString *)entityName{
+    NSArray *records;
+    // エンティティを指定してNSManagedObjectを取り出す。
+    NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:entityName];
+    
+    // 値の昇順に降順ソート(dueDate が古い順)
+    NSSortDescriptor *sortDescriptor = [[ NSSortDescriptor alloc ] initWithKey: @"dueDate" ascending: YES ];
+    NSArray *sortDescriptors = [[ NSArray alloc ] initWithObjects: sortDescriptor, nil ];
+    [request setSortDescriptors: sortDescriptors ];
+    
+    //レコード（NSArray）にDBレコードを入れる。
+    NSError *error = nil;
+    records = [_managedObjectContext executeFetchRequest:request error:&error];
 
+    return records;
+    
+}
 
 @end

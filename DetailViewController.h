@@ -14,10 +14,7 @@
 @property (strong, nonatomic) NSFetchedResultsController *fetchedResultsController;
 @property (strong, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (strong, nonatomic) NSEntityDescription *entity;
-
-
 @property (nonatomic) UIViewController *preContloller;
-
 @property (weak, nonatomic) IBOutlet UITextField *taskname;
 
 
@@ -37,7 +34,7 @@
 @property NSDate *dueDate;//実行日
 @property NSInteger estimatedTime; //見積時間
 @property NSInteger teTime;//経過時間
-
+@property NSManagedObject *mo;
 
 
 @end

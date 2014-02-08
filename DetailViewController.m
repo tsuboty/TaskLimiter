@@ -41,6 +41,7 @@
 @synthesize dueDate;
 @synthesize estimatedTime;
 @synthesize teTime;
+@synthesize mo;
 
 //DB格納用に秒で変数にいれる。
 int estimatedTimeSec;
@@ -70,8 +71,7 @@ int teTimeSec;
     self.editDatePickerValue.alpha = 0.0f;
     self.editPickerToolBar.alpha = 0.0f;
     _timePickerSwitch = NO;
-    
-    
+    NSLog(@"%@",@"call");
 }
 
 - (void)didReceiveMemoryWarning
@@ -82,22 +82,18 @@ int teTimeSec;
 
 //モーダルウィンドウを閉じる(完了ボタン)　編集したものをDBへ格納
 - (IBAction)returnButton:(id)sender {
-   //表示しているプロパティをDBへ格納
-    NSManagedObject *mo = [_records objectAtIndex:indexPath.row];
+   //表示しているプロパティをDBへ格納(ManagedObject は受け取ったもの。)
     [mo setValue:self.taskname.text forKey:@"name"];
     [mo setValue:dueDate forKey:@"dueDate"];
     [mo setValue:[NSNumber numberWithInt:estimatedTime] forKey:@"estimatedTime"];
     [mo setValue:[NSNumber numberWithInt:teTime] forKey:@"teTime"];
     
-    
-    NSError *error = nil;
+    NSError *error;
     if (![_managedObjectContext save:&error]) {
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
-    
     [self dismissViewControllerAnimated:YES completion:nil];
-    
 }
 
 //削除ボタンが押された時
@@ -136,6 +132,7 @@ int teTimeSec;
     self.editDatePickerValue.datePickerMode = UIDatePickerModeDate;
     self.editDatePickerValue.locale = [[NSLocale alloc] initWithLocaleIdentifier:@"ja_JP"];
     _datePickerMode = @"date";//Done押下時に使う
+    self.editDatePickerValue.date = dueDate;
     if (!_timePickerSwitch) {
         [self showModal:self.editDatePickerValue];
         [self showModal:self.editPickerToolBar];
@@ -157,13 +154,14 @@ int teTimeSec;
     [self.editDatePickerValue setDate:firstDate animated:YES];
     
     
-    
-    
     UIButton *bt = sender;
+    //tag:0 見積時間ボタン　tag:1 経過時間
     if (bt.tag == 0) {
         _datePickerMode = @"time";//見積時間　Done押下時に使う
+        self.editDatePickerValue.date = [self stringToDate:[self secondToHhMmSsString:estimatedTime]];
     }else if(bt.tag == 1){
-        _datePickerMode = @"tetime";
+        _datePickerMode = @"tetime";//経過時間
+        self.editDatePickerValue.date = [self stringToDate:[self secondToHhMmSsString:teTime]];
     }
     
     //表示されていない場合、アニメーションで表示
@@ -218,12 +216,7 @@ int teTimeSec;
             [self.teTimeLabel setTitle:str forState:UIControlStateNormal];
             
         }
-        
-        
-        
     }
-    
-    
 }
 
 //ToolBarでDoneボタンを押した動作
@@ -258,4 +251,20 @@ int teTimeSec;
     [modalView setAlpha:1.0f];
     [UIView commitAnimations];
 }
+
+-(NSString *)secondToHhMmSsString:(int)second{
+    int h = second/3600;
+    int m = (second - h*3600)/60;
+    int s = second % 60;
+    NSString *HhMmSsString = [NSString stringWithFormat:@"%02d:%02d:%02d",h,m,s];
+    return HhMmSsString;
+}
+
+-(NSDate *)stringToDate:(NSString *)str{
+    NSDateFormatter *inputFormatter = [[NSDateFormatter alloc] init];
+    [inputFormatter setDateFormat:@"hh:mm:ss"];
+    NSDate *formatterDate = [inputFormatter dateFromString:str];
+    return formatterDate;
+}
+
 @end

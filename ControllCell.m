@@ -63,8 +63,8 @@ int sec;
                        ];
         
         startTime = [NSDate date];
-        
-        
+        self.backgroundColor = [UIColor colorWithRed:0.882 green:1.00 blue:0.824 alpha:1.0];
+   //     self.backgroundColor = [UIColor redColor];
     }
     else{
         onoff = NO;
@@ -73,6 +73,7 @@ int sec;
         self.teTimeLabel.text = [NSString stringWithFormat:@"%02d:%02d",teTime/60,teTime%60];
         [self.playButton setImage:[UIImage imageNamed:@"playtaskwithCircle.png"] forState:UIControlStateNormal];
         [tm invalidate];
+        self.backgroundColor = [UIColor colorWithRed:0.882 green:0.882 blue:0.882 alpha:1.0];
     }
 
  
